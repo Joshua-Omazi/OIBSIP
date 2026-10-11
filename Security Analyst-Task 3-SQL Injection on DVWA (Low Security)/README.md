@@ -1,41 +1,69 @@
-# Task 3: SQL Injection on DVWA (Low Security) — Security Analyst Track
+# Task 3: SQL Injection on DVWA (Low Security)
 
 ## Overview
-This project demonstrates a classic SQL Injection (SQLi) vulnerability exploiting the login form of the Damn Vulnerable Web Application (DVWA) configured on its **Low** security setting[cite: 1]. The objective is to understand how improperly sanitized input handling allows attackers to manipulate backend database queries, extract sensitive information, and learn how developers mitigate these risks[cite: 1].
+This project walks through a classic SQL Injection (SQLi) attack on the login/user ID form of the **Damn Vulnerable Web Application (DVWA)** set to its **Low** security level. The goal here is to document the whole lab process from scratch, break down how the payloads manipulate the database, look at what data gets exposed, and explain how developers actually patch these vulnerabilities in real applications.
 
 ---
 
-## What is SQL Injection?
-SQL Injection is a web security vulnerability that allows an attacker to interfere with the queries that an application makes to its database. It generally occurs when user-supplied input is directly concatenated into dynamic SQL queries without proper sanitization, validation, or parameterization, allowing malicious SQL commands to be executed directly by the database engine.
+## 1. What is SQL Injection?
+SQL Injection is basically a security flaw where a website takes user input and blindly stitches it straight into a database query without checking it first. Because the app doesn't separate user text from actual code, an attacker can type in special SQL commands. The database gets tricked into running those commands, which lets people bypass authentication, read restricted tables, or dump entire databases.
 
 ---
 
-## Attack Walkthrough & Analysis
+## 2. Local Environment Setup & Configuration
+To practice this safely, I set up the lab locally on a Kali Linux virtual machine running inside VirtualBox.
 
-### 1. Environment Setup
-* Deployed DVWA locally via XAMPP on Apache and MySQL[cite: 1].
-* Initialized the database schema through the setup interface[cite: 1].
-* Configured the security settings level to **Low**[cite: 1], disabling input sanitization and anti-CSRF token checks to simulate vulnerable legacy code.
+* **Tools Used**: DVWA hosted locally via XAMPP (Apache and MySQL), accessed through a web browser.
+* **Setup Steps**:
+  1. Downloaded and unpacked the XAMPP package, then gave the installer script execution permissions in the terminal:
+     ```bash
+     chmod +x xampp-linux-x64-8.2.4-0-installer.run
+     ```
+  2. Ran the installer to get Apache and MySQL up and running.
+     *(Terminal Setup / Installer Execution)*
+     ![Terminal Execution](assets/firststep1.jpg)
 
-### 2. Exploitation & Payload Breakdown
+  3. Went into the local server directory (`/opt/lampp/htdocs/dvwa/config/`) and edited the `config.inc.php` file using nano to hook up local MySQL root credentials.
+     *(Configuration File Editing)*
+     ![Nano Config File](assets/step2_nano_config.png)
 
-#### Payload 1: `' OR '1'='1`[cite: 1]
-* **How it works**: The single quote closes the original SQL string literal prematurely, followed by a logical condition `OR '1'='1'` which always evaluates to true. Because the condition is always true, the WHERE clause matches every single record in the database table.
-* **Exposed Data**: Bypassed authentication logic, exposing user IDs, first names, surnames, user logins, and hashed passwords for all registered accounts[cite: 1].
+  4. Opened up the browser to verify that the local server dashboard was live and serving pages.
+     *(XAMPP Dashboard)*
+     ![XAMPP Dashboard](assets/step3_xampp_dashboard.png)
 
-#### Payload 2: `' UNION SELECT null, user() --`[cite: 1]
-* **How it works**: Uses the `UNION` operator to combine the results of the original query with a malicious query. The `user()` function queries the database management system to return the current database user context, while `--` comments out the remainder of the original query syntax.
-* **Exposed Data**: Revealed internal database user privileges and account privileges.
-
-#### Payload 3: `' UNION SELECT null, version() --`[cite: 1]
-* **How it works**: Appends a `UNION` query retrieving the database server version (`version()`), allowing an attacker to map software vulnerabilities specific to that database engine release.
-* **Exposed Data**: Disclosed the exact backend database system release version.
+  5. Headed over to the DVWA setup page, built the database tables, and logged in (`admin` / `password`).
+  6. Clicked on **DVWA Security** in the sidebar and dropped the security level down to **Low**. This turns off input filtering, character escaping, and token checks so we can see how legacy, insecure code behaves.
+     *(Security Level Set to Low)*
+     ![Security Low Setting](assets/step4_security_low.png)
 
 ---
 
-## Remediation & Prevention
-To protect applications from SQL injection vulnerabilities, developers must adopt secure coding practices:
+## 3. Attack Execution, Payloads, Mechanics & Data Exposure
+I navigated straight to the **SQL Injection** module in DVWA to test out a few different payloads.
 
-1. **Parameterized Queries / Prepared Statements**: The most effective defense. Parameterization ensures that user input is treated strictly as data, never as executable code or query syntax.
-2. **Input Validation and Whitelisting**: Ensure inputs conform to expected data types, lengths, and character sets.
-3. **Principle of Least Privilege**: Restrict database accounts used by the web application so they only possess permissions necessary for their specific operational scope.
+### Payload 1: Boolean Logic Bypass (`1' OR '1'='1`)
+* **How it works**: The single quote (`'`) closes out the developer's original string early. Adding `OR '1'='1'` tacks on a condition that is always true. Since that check never fails, the database's `WHERE` clause matches every single row in the users table.
+* **Data Exposed**: It bypasses the login logic entirely and dumps every user's ID, first name, and surname right onto the page.
+* **Execution Output**:
+  ![Payload 1 Output](assets/step5_payload1_auth.png)
+
+### Payload 2: Query Commenting Bypass (`1' OR 1=1 #`)
+* **How it suffers**: This one uses the hash symbol (`#`), which tells MySQL to treat everything after it as a comment. It forces the database to ignore any trailing quotes or syntax left over by the original developer so the query doesn't throw a syntax error.
+* **Data Exposed**: Successfully tricks the backend into bypassing restrictions and outputting the full user roster.
+* **Execution Output**:
+  ![Payload 2 Output](assets/step6_payload2_logic.png)
+
+### Payload 3: Credential Extraction via UNION (`1' UNION SELECT user, password FROM users #`)
+* **How it works**: The `UNION` operator tells the database to stitch the results of the app's original query together with a brand-new, unauthorized query of our choosing. The `#` comments out the rest of the original code so the syntax stays valid.
+* **Data Exposed**: Pulls usernames and password hashes straight out of restricted columns and displays them on the interface.
+* **Execution Output**:
+  ![Payload 3 Output](assets/step7_payload3_union.png)
+
+---
+
+## 4. How a Developer Would Fix This Vulnerability
+To actually secure code against SQL injection, developers need to stop using messy string concatenation and use proper defense-in-keeping practices:
+
+1. **Parameterized Queries (Prepared Statements)**: This is the gold standard. Prepared statements treat user input strictly as data, never as executable code. Even if someone types SQL commands into a form field, the database just reads it as plain text.
+2. **Strict Input Validation**: Checking incoming data to make sure it matches expected types, character sets, and length limits before it ever touches the database layer.
+3. **Principle of Least Privilege**: Ensuring the database user account connected to the web app only has permissions for what it absolutely needs to do, limiting the damage if a bug is ever exploited.
