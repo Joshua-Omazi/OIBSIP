@@ -21,7 +21,7 @@ To practice this safely, I set up the lab locally on a Kali Linux virtual machin
      ```
   2. Ran the installer to get Apache and MySQL up and running.
      *(Terminal Setup / Installer Execution)*
-     ![Terminal Execution](firststep1.jpg)
+     ![Terminal Execution](1stproject.jpg)
 
   3. Went into the local server directory (`/opt/lampp/htdocs/dvwa/config/`) and edited the `config.inc.php` file using nano to hook up local MySQL root credentials.
      *(Configuration File Editing)*
