@@ -25,7 +25,7 @@ To practice this safely, I set up the lab locally on a Kali Linux virtual machin
 
   3. Went into the local server directory (`/opt/lampp/htdocs/dvwa/config/`) and edited the `config.inc.php` file using nano to hook up local MySQL root credentials.
      *(Configuration File Editing)*
-     ![Nano Config File](assets/step2_nano_config.png)
+     ![Nano Config File](nanopart.jpg)
 
   4. Opened up the browser to verify that the local server dashboard was live and serving pages.
      *(XAMPP Dashboard)*
