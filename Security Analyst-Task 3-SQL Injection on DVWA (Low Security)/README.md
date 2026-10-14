@@ -57,7 +57,7 @@ I navigated straight to the **SQL Injection** module in DVWA to test out a few d
 * **How it works**: The `UNION` operator tells the database to stitch the results of the app's original query together with a brand-new, unauthorized query of our choosing. The `#` comments out the rest of the original code so the syntax stays valid.
 * **Data Exposed**: Pulls usernames and password hashes straight out of restricted columns and displays them on the interface.
 * **Execution Output**:
-  ![Payload 3 Output](assets/step7_payload3_union.png)
+  ![Payload 3 Output](dvwatest3.jpg)
 
 ---
 
