@@ -45,7 +45,7 @@ I navigated straight to the **SQL Injection** module in DVWA to test out a few d
 * **How it works**: The single quote (`'`) closes out the developer's original string early. Adding `OR '1'='1'` tacks on a condition that is always true. Since that check never fails, the database's `WHERE` clause matches every single row in the users table.
 * **Data Exposed**: It bypasses the login logic entirely and dumps every user's ID, first name, and surname right onto the page.
 * **Execution Output**:
-  ![Payload 1 Output](assets/step5_payload1_auth.png)
+  ![Payload 1 Output](dvwapart1.jpg)
 
 ### Payload 2: Query Commenting Bypass (`1' OR 1=1 #`)
 * **How it suffers**: This one uses the hash symbol (`#`), which tells MySQL to treat everything after it as a comment. It forces the database to ignore any trailing quotes or syntax left over by the original developer so the query doesn't throw a syntax error.
