@@ -29,7 +29,7 @@ To practice this safely, I set up the lab locally on a Kali Linux virtual machin
 
   4. Opened up the browser to verify that the local server dashboard was live and serving pages.
      *(XAMPP Dashboard)*
-     ![XAMPP Dashboard](assets/step3_xampp_dashboard.png)
+     ![XAMPP Dashboard](dashboardpart.jpg)
 
   5. Headed over to the DVWA setup page, built the database tables, and logged in (`admin` / `password`).
   6. Clicked on **DVWA Security** in the sidebar and dropped the security level down to **Low**. This turns off input filtering, character escaping, and token checks so we can see how legacy, insecure code behaves.
