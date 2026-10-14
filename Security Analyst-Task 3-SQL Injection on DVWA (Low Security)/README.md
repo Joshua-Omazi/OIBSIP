@@ -34,7 +34,7 @@ To practice this safely, I set up the lab locally on a Kali Linux virtual machin
   5. Headed over to the DVWA setup page, built the database tables, and logged in (`admin` / `password`).
   6. Clicked on **DVWA Security** in the sidebar and dropped the security level down to **Low**. This turns off input filtering, character escaping, and token checks so we can see how legacy, insecure code behaves.
      *(Security Level Set to Low)*
-     ![Security Low Setting](assets/step4_security_low.png)
+     ![Security Low Setting](securitylow.jpg)
 
 ---
 
