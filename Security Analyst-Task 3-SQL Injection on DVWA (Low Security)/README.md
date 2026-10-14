@@ -51,7 +51,7 @@ I navigated straight to the **SQL Injection** module in DVWA to test out a few d
 * **How it suffers**: This one uses the hash symbol (`#`), which tells MySQL to treat everything after it as a comment. It forces the database to ignore any trailing quotes or syntax left over by the original developer so the query doesn't throw a syntax error.
 * **Data Exposed**: Successfully tricks the backend into bypassing restrictions and outputting the full user roster.
 * **Execution Output**:
-  ![Payload 2 Output](assets/step6_payload2_logic.png)
+  ![Payload 2 Output](dvwatest2.jpg)
 
 ### Payload 3: Credential Extraction via UNION (`1' UNION SELECT user, password FROM users #`)
 * **How it works**: The `UNION` operator tells the database to stitch the results of the app's original query together with a brand-new, unauthorized query of our choosing. The `#` comments out the rest of the original code so the syntax stays valid.
