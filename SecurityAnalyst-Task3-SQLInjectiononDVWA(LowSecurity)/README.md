@@ -21,20 +21,20 @@ To practice this safely, I set up the lab locally on a Kali Linux virtual machin
      ```
   2. Ran the installer to get Apache and MySQL up and running.
      *(Terminal Setup / Installer Execution)*
-     ![Terminal Execution](1stproject.jpg)
+     ![Terminal Execution](assets/1stproject.jpg)
 
   3. Went into the local server directory (`/opt/lampp/htdocs/dvwa/config/`) and edited the `config.inc.php` file using nano to hook up local MySQL root credentials.
      *(Configuration File Editing)*
-     ![Nano Config File](nanopart.jpg)
+     ![Nano Config File](assets/nanopart.jpg)
 
   4. Opened up the browser to verify that the local server dashboard was live and serving pages.
      *(XAMPP Dashboard)*
-     ![XAMPP Dashboard](dashboardpart.jpg)
+     ![XAMPP Dashboard](assets/dashboardpart.jpg)
 
   5. Headed over to the DVWA setup page, built the database tables, and logged in (`admin` / `password`).
   6. Clicked on **DVWA Security** in the sidebar and dropped the security level down to **Low**. This turns off input filtering, character escaping, and token checks so we can see how legacy, insecure code behaves.
      *(Security Level Set to Low)*
-     ![Security Low Setting](securitylow.jpg)
+     ![Security Low Setting](assets/securitylow.jpg)
 
 ---
 
@@ -45,19 +45,19 @@ I navigated straight to the **SQL Injection** module in DVWA to test out a few d
 * **How it works**: The single quote (`'`) closes out the developer's original string early. Adding `OR '1'='1'` tacks on a condition that is always true. Since that check never fails, the database's `WHERE` clause matches every single row in the users table.
 * **Data Exposed**: It bypasses the login logic entirely and dumps every user's ID, first name, and surname right onto the page.
 * **Execution Output**:
-  ![Payload 1 Output](dvwatest1.jpg)
+  ![Payload 1 Output](assets/dvwatest1.jpg)
 
 ### Payload 2: Query Commenting Bypass (`1' OR 1=1 #`)
 * **How it suffers**: This one uses the hash symbol (`#`), which tells MySQL to treat everything after it as a comment. It forces the database to ignore any trailing quotes or syntax left over by the original developer so the query doesn't throw a syntax error.
 * **Data Exposed**: Successfully tricks the backend into bypassing restrictions and outputting the full user roster.
 * **Execution Output**:
-  ![Payload 2 Output](dvwatest2.jpg)
+  ![Payload 2 Output](assets/dvwatest2.jpg)
 
 ### Payload 3: Credential Extraction via UNION (`1' UNION SELECT user, password FROM users #`)
 * **How it works**: The `UNION` operator tells the database to stitch the results of the app's original query together with a brand-new, unauthorized query of our choosing. The `#` comments out the rest of the original code so the syntax stays valid.
 * **Data Exposed**: Pulls usernames and password hashes straight out of restricted columns and displays them on the interface.
 * **Execution Output**:
-  ![Payload 3 Output](dvwatest3.jpg)
+  ![Payload 3 Output](assets/dvwatest3.jpg)
 
 ---
 
